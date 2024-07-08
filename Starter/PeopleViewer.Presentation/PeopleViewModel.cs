@@ -141,15 +141,15 @@ public class PeopleViewModel : INotifyPropertyChanged
 
         IEnumerable<Person> people = _fullPeopleList;
         if (!Include70s)
-            people = people.Where(p => p.StartDate.Year / 10 * 10 != 1970);
+            people = people.Where(p => p.StartDate.Year / 10 != 197);
         if (!Include80s)
-            people = people.Where(p => p.StartDate.Year / 10 * 10 != 1980);
+            people = people.Where(p => p.StartDate.Year / 10 != 198);
         if (!Include90s)
-            people = people.Where(p => p.StartDate.Year / 10 * 10 != 1990);
+            people = people.Where(p => p.StartDate.Year / 10 != 199);
         if (!Include00s)
-            people = people.Where(p => p.StartDate.Year / 10 * 10 != 2000);
+            people = people.Where(p => p.StartDate.Year / 10 != 200);
         if (!Include10s)
-            people = people.Where(p => p.StartDate.Year / 10 * 10 != 2010);
+            people = people.Where(p => p.StartDate.Year / 10 != 201);
 
         People = people.ToList();
     }
