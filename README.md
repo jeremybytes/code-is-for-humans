@@ -4,5 +4,5 @@ The computer understands your code just fine. But what about humans? The world i
 
 ## Resources
 * Slides: *coming soon!*  
-* Additional Project: [The Watcher](c:\Development\Sessions\CodeIsForHumans\Starter)  
+* Additional Project: [The Watcher](https://github.com/jeremybytes/code-is-for-humans)  
 ---
