@@ -1,19 +1,19 @@
-using Moq;
+﻿using Moq;
 using PeopleViewer.Common;
 
 namespace PeopleViewer.Presentation.Tests;
 
 public partial class PeopleViewModelTests
 {
-    [SetUp]
-    public void TestSetUp()
+    // Setup
+    public PeopleViewModelTests()
     {
         SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
     }
 
     #region TodaysWinners Initialization
 
-    [Test]
+    [Fact]
     public void PeopleViewModel_OnInitialization_TodaysWinnersIsPopulated()
     {
         // Arrange
@@ -23,10 +23,10 @@ public partial class PeopleViewModelTests
         viewModel.Initialize();
 
         // Assert
-        Assert.That(viewModel.TodaysWinners, Is.Not.Null);
+        Assert.NotNull(viewModel.TodaysWinners);
     }
 
-    [Test]
+    [Fact]
     public void PeopleViewModel_OnInitializationAndTodaysOrdersMissing_ThrowsException()
     {
         // Arrange
@@ -37,11 +37,11 @@ public partial class PeopleViewModelTests
         try
         {
             viewModel.Initialize();
-            Assert.Fail("No Exception thrown when TodaysWinners is missing");
+            Assert.Fail("No exception thrown when TodaysWinners is missing");
         }
         catch (MissingFieldException)
         {
-            Assert.Pass();
+            // Pass
         }
         catch (Exception)
         {
@@ -53,15 +53,15 @@ public partial class PeopleViewModelTests
 
     #region DataReader Initialization
 
-    [Test]
-    public void PeopleViewModel_OnInitialization_DataReaderIsPopulated()
+    [Fact]
+    public void PeopleViewModel_OnInitialization_DataReaderIsPopulate()
     {
         var viewModel = GetStandardViewModel();
         viewModel.Initialize();
-        Assert.That(viewModel.DataReader, Is.Not.Null);
+        Assert.NotNull(viewModel.DataReader);
     }
 
-    [Test]
+    [Fact]
     public void PeopleViewModel_OnInitializationAndDataReaderMissing_ThrowsException()
     {
         var winners = GetFakeWinners();
@@ -69,11 +69,11 @@ public partial class PeopleViewModelTests
         try
         {
             viewModel.Initialize();
-            Assert.Fail("No Exception thrown when DataReader is missing");
+            Assert.Fail("No exception thrown when DataReader is missing");
         }
         catch (MissingFieldException)
         {
-            Assert.Pass();
+            // Pass
         }
         catch (Exception)
         {
@@ -85,7 +85,7 @@ public partial class PeopleViewModelTests
 
     #region DataReader Caching
 
-    [Test]
+    [Fact]
     public void DataReader_OnRefreshAndCacheExpired_DataReaderIsCalledTwice()
     {
         var mockReader = GetMockDataReader();
@@ -103,7 +103,7 @@ public partial class PeopleViewModelTests
         mockReader.Verify(s => s.GetPeople(), Times.Exactly(2));
     }
 
-    [Test]
+    [Fact]
     public void DataReader_OnRefreshAndCacheNotExpired_DataReaderIsCalledOnce()
     {
         var mockReader = GetMockDataReader();
@@ -122,9 +122,9 @@ public partial class PeopleViewModelTests
 
     #endregion
 
-    #region DataReader Exceptions
+    #region DataReaderExceptions
 
-    [Test]
+    [Fact]
     public void PeopleViewModel_OnInitializationWithDataReaderException_ThrowsExceptionOnCurrentThread()
     {
         var dataReader = GetExceptionDataReader();
@@ -135,10 +135,10 @@ public partial class PeopleViewModelTests
         viewModel.Initialize();
         tracker.WaitForChange(nameof(viewModel.LastRefreshTime), 1);
 
-        Assert.That(viewModel.ViewModelException, Is.Not.Null);
+        Assert.NotNull(viewModel.ViewModelException);
     }
 
-    [Test]
+    [Fact]
     public void PeopleViewModel_OnInitializationWithNoDataReaderException_NoExceptionThrown()
     {
         var dataReader = GetFakeDataReader();
@@ -149,80 +149,77 @@ public partial class PeopleViewModelTests
         viewModel.Initialize();
         tracker.WaitForChange(nameof(viewModel.LastRefreshTime), 1);
 
-        Assert.That(viewModel.ViewModelException, Is.Null);
+        Assert.Null(viewModel.ViewModelException);
     }
 
     #endregion
 
     #region Filters
 
-    [Test]
+    [Fact]
     public void People_FilterIncludes70s_70sRecordIsIncluded()
     {
         var viewModel = GetStandardViewModel();
         var tracker = new PropertyChangeTracker(viewModel);
         viewModel.Initialize();
         tracker.WaitForChange(nameof(viewModel.LastRefreshTime), 1);
-        Assert.That(viewModel.People.Contains(test70sPerson), Is.True,
-            "Invalid Arrangement: Test Person is not in People");
+        Assert.Contains(test70sPerson, viewModel.People);
 
         viewModel.Include70s = true;
 
-        Assert.That(viewModel.People.Contains(test70sPerson), Is.True);
+        Assert.Contains(test70sPerson, viewModel.People);
     }
 
-    [Test]
+    [Fact]
     public void People_FilterDoesNotInclude70s_70sRecordIsNotIncluded()
     {
         var viewModel = GetStandardViewModel();
         var tracker = new PropertyChangeTracker(viewModel);
         viewModel.Initialize();
         tracker.WaitForChange(nameof(viewModel.LastRefreshTime), 1);
-        Assert.That(viewModel.People.Contains(test70sPerson), Is.True,
-            "Invalid Arrangement: Test Person is not in People");
+        Assert.Contains(test70sPerson, viewModel.People);
 
         viewModel.Include70s = false;
 
-        Assert.That(viewModel.People.Contains(test70sPerson), Is.False);
+        Assert.DoesNotContain(test70sPerson, viewModel.People);
     }
 
-    [Test]
+    [Fact]
     public void People_FilterIncludes00s_00sRecordIsIncluded()
     {
         var viewModel = GetStandardViewModel();
         var tracker = new PropertyChangeTracker(viewModel);
         viewModel.Initialize();
         tracker.WaitForChange(nameof(viewModel.LastRefreshTime), 1);
-        Assert.That(viewModel.People.Contains(test00sPerson), Is.True,
-            "Invalid Arrangement: Test Person is not in People");
+        Assert.Contains(test00sPerson, viewModel.People);
 
         viewModel.Include00s = true;
 
-        Assert.That(viewModel.People.Contains(test00sPerson), Is.True);
+        Assert.Contains(test00sPerson, viewModel.People);
     }
 
-    [Test]
+    [Fact]
     public void People_FilterDoesNotInclude00s_00sRecordIsNotIncluded()
     {
         var viewModel = GetStandardViewModel();
         var tracker = new PropertyChangeTracker(viewModel);
         viewModel.Initialize();
         tracker.WaitForChange(nameof(viewModel.LastRefreshTime), 1);
-        Assert.That(viewModel.People.Contains(test00sPerson), Is.True,
-            "Invalid Arrangement: Test Person is not in People");
+        Assert.Contains(test00sPerson, viewModel.People);
 
         viewModel.Include00s = false;
 
-        Assert.That(viewModel.People.Contains(test00sPerson), Is.False);
+        Assert.DoesNotContain(test00sPerson, viewModel.People);
     }
 
     #endregion
 
     #region Filter Reset
 
-    [Test]
+    [Fact]
     public void Filters_OnRefreshAndCacheExpired_AreResetToDefaults()
     {
+        // Arrange
         var mockReader = GetMockDataReader();
         var winners = GetFakeWinners();
         var viewModel = GetCustomViewModel(mockReader.Object, winners);
@@ -240,20 +237,21 @@ public partial class PeopleViewModelTests
         tracker.Reset();
         viewModel.RefreshPeople();
         tracker.WaitForChange(nameof(viewModel.LastRefreshTime), 1);
-        mockReader.Verify(s => s.GetPeople(), Times.Exactly(2), 
+        mockReader.Verify(s => s.GetPeople(), Times.Exactly(2),
             "DataReader was not called twice");
 
         // Assert
-        Assert.That(viewModel.Include70s, Is.True, "Include70s filter was not reset");
-        Assert.That(viewModel.Include80s, Is.True, "Include80s filter was not reset");
-        Assert.That(viewModel.Include90s, Is.True, "Include90s filter was not reset");
-        Assert.That(viewModel.Include00s, Is.True, "Include00s filter was not reset");
-        Assert.That(viewModel.Include10s, Is.True, "Include10s filter was not reset");
+        Assert.True(viewModel.Include70s, "Include70s filter was not reset");
+        Assert.True(viewModel.Include80s, "Include80s filter was not reset");
+        Assert.True(viewModel.Include90s, "Include90s filter was not reset");
+        Assert.True(viewModel.Include00s, "Include00s filter was not reset");
+        Assert.True(viewModel.Include10s, "Include10s filter was not reset");
     }
 
-    [Test]
+    [Fact]
     public void Filters_OnRefreshAndCacheNotExpired_AreResetToDefaults()
     {
+        // Arrange
         var mockReader = GetMockDataReader();
         var winners = GetFakeWinners();
         var viewModel = GetCustomViewModel(mockReader.Object, winners);
@@ -274,34 +272,32 @@ public partial class PeopleViewModelTests
             "DataReader was not called once");
 
         // Assert
-        Assert.That(viewModel.Include70s, Is.True, "Include70s filter was not reset");
-        Assert.That(viewModel.Include80s, Is.True, "Include80s filter was not reset");
-        Assert.That(viewModel.Include90s, Is.True, "Include90s filter was not reset");
-        Assert.That(viewModel.Include00s, Is.True, "Include00s filter was not reset");
-        Assert.That(viewModel.Include10s, Is.True, "Include10s filter was not reset");
+        Assert.True(viewModel.Include70s, "Include70s filter was not reset");
+        Assert.True(viewModel.Include80s, "Include80s filter was not reset");
+        Assert.True(viewModel.Include90s, "Include90s filter was not reset");
+        Assert.True(viewModel.Include00s, "Include00s filter was not reset");
+        Assert.True(viewModel.Include10s, "Include10s filter was not reset");
     }
 
     #endregion
 
     #region Winners Item Selection
 
-    [Test]
+    [Fact]
     public void WinnersSelectedPeople_AddToWinnersWithNewPerson_PersonAdded()
     {
         var viewModel = GetStandardViewModel();
         viewModel.Initialize();
-        var newPerson = new Person(100, "Rogers", "Peter", 
+        var newPerson = new Person(100, "Rogers", "Peter",
             new DateTime(2013, 01, 01), 5);
-        Assert.That(viewModel.TodaysWinners.SelectedPeople.Contains(newPerson),
-            Is.False, "Invalid Arrangement: Person already in list");
+        Assert.DoesNotContain(newPerson, viewModel.TodaysWinners.SelectedPeople);
 
         viewModel.AddToWinners(newPerson);
 
-        Assert.That(viewModel.TodaysWinners.SelectedPeople.Contains(newPerson),
-            Is.True, "New Person was not added to SelectedPeople");
+        Assert.Contains(newPerson, viewModel.TodaysWinners.SelectedPeople);
     }
 
-    [Test]
+    [Fact]
     public void WinnersSelectedPeople_AddToWinnersWithExistingPerson_PersonIsNotAdded()
     {
         var viewModel = GetStandardViewModel();
@@ -309,19 +305,17 @@ public partial class PeopleViewModelTests
         var newPerson = new Person(100, "Rogers", "Peter",
             new DateTime(2013, 01, 01), 5);
         viewModel.AddToWinners(newPerson);
-        Assert.That(viewModel.TodaysWinners.SelectedPeople.Contains(newPerson),
-            Is.True, "Invalid Arrangement: Could not add test person");
-        var oldCount = viewModel.TodaysWinners.SelectedPeople.Count();
+        Assert.Contains(newPerson, viewModel.TodaysWinners.SelectedPeople);
+        var oldCount = viewModel.TodaysWinners.SelectedPeople.Count;
 
         viewModel.AddToWinners(newPerson);
-        var newCount = viewModel.TodaysWinners.SelectedPeople.Count();
+        var newCount = viewModel.TodaysWinners.SelectedPeople.Count;
 
-        Assert.That(newCount, Is.EqualTo(oldCount), "SelectedPeople count changed");
-        Assert.That(viewModel.TodaysWinners.SelectedPeople.Contains(newPerson),
-            Is.True, "Expected Person is not in list");
+        Assert.Equal(oldCount, newCount);
+        Assert.Contains(newPerson, viewModel.TodaysWinners.SelectedPeople);
     }
 
-    [Test]
+    [Fact]
     public void WinnersSelectedPeople_RemoveFromWinnersWithExistingPerson_PersonIsRemoved()
     {
         var viewModel = GetStandardViewModel();
@@ -329,35 +323,31 @@ public partial class PeopleViewModelTests
         var newPerson = new Person(100, "Rogers", "Peter",
             new DateTime(2013, 01, 01), 5);
         viewModel.AddToWinners(newPerson);
-        Assert.That(viewModel.TodaysWinners.SelectedPeople.Contains(newPerson),
-            Is.True, "Invalid Arrangement: Could not add test person");
-        var oldCount = viewModel.TodaysWinners.SelectedPeople.Count();
+        Assert.Contains(newPerson, viewModel.TodaysWinners.SelectedPeople);
+        var oldCount = viewModel.TodaysWinners.SelectedPeople.Count;
 
         viewModel.RemoveFromWinners(newPerson);
-        var newCount = viewModel.TodaysWinners.SelectedPeople.Count();
+        var newCount = viewModel.TodaysWinners.SelectedPeople.Count;
 
-        Assert.That(newCount, Is.LessThan(oldCount), "SelectedPeople count not changed");
-        Assert.That(viewModel.TodaysWinners.SelectedPeople.Contains(newPerson),
-            Is.False, "Person was not removed");
+        Assert.NotEqual(oldCount, newCount);
+        Assert.DoesNotContain(newPerson, viewModel.TodaysWinners.SelectedPeople);
     }
 
-    [Test]
+    [Fact]
     public void WinnersSelectedPeople_RemoveFromWinnersWithNewPerson_SelectedPeopleIsUnchanged()
     {
         var viewModel = GetStandardViewModel();
         viewModel.Initialize();
         var newPerson = new Person(100, "Rogers", "Peter",
             new DateTime(2013, 01, 01), 5);
-        Assert.That(viewModel.TodaysWinners.SelectedPeople.Contains(newPerson),
-            Is.False, "Invalid Arrangement: Test person is already in list");
-        var oldCount = viewModel.TodaysWinners.SelectedPeople.Count();
+        Assert.DoesNotContain(newPerson, viewModel.TodaysWinners.SelectedPeople);
+        var oldCount = viewModel.TodaysWinners.SelectedPeople.Count;
 
         viewModel.RemoveFromWinners(newPerson);
-        var newCount = viewModel.TodaysWinners.SelectedPeople.Count();
+        var newCount = viewModel.TodaysWinners.SelectedPeople.Count;
 
-        Assert.That(newCount, Is.EqualTo(oldCount), "SelectedPeople count changed");
-        Assert.That(viewModel.TodaysWinners.SelectedPeople.Contains(newPerson),
-            Is.False, "Person found in SelectedPeople");
+        Assert.Equal(oldCount, newCount);
+        Assert.DoesNotContain(newPerson, viewModel.TodaysWinners.SelectedPeople);
     }
 
     #endregion

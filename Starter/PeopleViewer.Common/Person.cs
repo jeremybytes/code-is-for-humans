@@ -14,4 +14,10 @@ public record Person(int Id, string GivenName, string FamilyName,
     {
         return this.Id == other?.Id;
     }
+
+    
+    public override int GetHashCode()
+    {
+        return this.Id;
+    }
 }

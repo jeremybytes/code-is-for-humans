@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Ninject;
 using PeopleViewer.Common;
+using PeopleViewer.Presentation;
 
 namespace PeopleViewer.Presentation.Tests;
 
